@@ -14,7 +14,7 @@ public class WorkerImage {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "image_url")
     private String imageURL;
 
     @JsonIncludeProperties("id")

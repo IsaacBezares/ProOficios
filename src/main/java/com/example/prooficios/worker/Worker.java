@@ -33,9 +33,6 @@ public class Worker {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
-    private String password;
-
     private Double rating;
 
     private Integer noReviews;
@@ -69,13 +66,12 @@ public class Worker {
     public Worker() {
     }
 
-    public Worker(Long id, String name, String profilePicture, String phone, String email, String password, Double rating, Integer noReviews, LocalDate joinDate, String description, Set<Service> workerServices, Set<Order> orders, Set<Unavailability> unavailability, Set<WorkerImage> workerImages) {
+    public Worker(Long id, String name, String profilePicture, String phone, String email, Double rating, Integer noReviews, LocalDate joinDate, String description, Set<Service> workerServices, Set<Order> orders, Set<Unavailability> unavailability, Set<WorkerImage> workerImages) {
         this.id = id;
         this.name = name;
         this.profilePicture = profilePicture;
         this.phone = phone;
         this.email = email;
-        this.password = password;
         this.rating = rating;
         this.noReviews = noReviews;
         this.joinDate = joinDate;
@@ -124,14 +120,6 @@ public class Worker {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public Double getRating() {
@@ -219,7 +207,6 @@ public class Worker {
                 ", profilePicture='" + profilePicture + '\'' +
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 ", rating='" + rating + '\'' +
                 ", noReviews=" + noReviews +
                 ", joinDate=" + joinDate +
