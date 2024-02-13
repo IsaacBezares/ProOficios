@@ -55,8 +55,6 @@ public class WorkerService {
             sRepository.findById(newService.getId())
                     .orElseThrow(() -> new ServiceNotFoundException(newService.getId()));
 
-            System.out.println(newService);
-
             worker.getWorkerServices().add(newService);
         });
 

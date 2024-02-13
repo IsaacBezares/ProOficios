@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://postgres-review:5432/review-service"
+    driver-class-name: org.postgresql.Driver
+    username: "admin"
+    password: "password"
+  kafka:
+    bootstrap-servers: "broker:29092"
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://keycloak:8080/realms/prooficos-realm"
+
+management:
+  zipkin:
+    tracing:
+      endpoint: "http://zipkin:9411/api/v2/spans"
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: "http://discovery-server:8761/eureka"
+
+server.port: 8080

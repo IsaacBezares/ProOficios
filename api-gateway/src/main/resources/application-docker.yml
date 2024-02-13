@@ -1,0 +1,71 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://keycloak:8080/realms/prooficos-realm"
+  cloud:
+    gateway:
+      routes:
+        - id: "worker-service"
+          uri: "lb://worker-service"
+          predicates:
+            - "Path=/workers/**,/workerimages/**,/unavailability/**"
+          filters:
+            - name: CircuitBreaker
+              args:
+                fallbackUri: "forward:/workerServiceFallBack"
+        - id: "user-service"
+          uri: "lb://user-service"
+          predicates:
+            - "Path=/users/**"
+          filters:
+            - name: "CircuitBreaker"
+              args:
+                fallbackUri: "forward:/userServiceFallBack"
+        - id: "service-service"
+          uri: "lb://service-service"
+          predicates:
+            - "Path=/services/**"
+          filters:
+            - name: "CircuitBreaker"
+              args:
+                fallbackUri: "forward:/serviceServiceFallBack"
+        - id: "order-service"
+          uri: "lb://order-service"
+          predicates:
+            - "Path=/orders/**"
+          filters:
+            - name: "CircuitBreaker"
+              args:
+                fallbackUri: "forward:/orderServiceFallBack"
+        - id: "review-service"
+          uri: "lb://review-service"
+          predicates:
+            - "Path=/reviews/**"
+          filters:
+            - name: "CircuitBreaker"
+              args:
+                fallbackUri: "forward:/reviewServiceFallBack"
+        - id: "discovery-server"
+          uri: "http://discovery-service:8761"
+          predicates:
+            - "Path=/eureka/web"
+          filters:
+            - "SetPath=/"
+        - id: "discovery-server-static"
+          uri: "http://discovery-service:8761"
+          predicates:
+            - "Path=/eureka/**"
+
+management:
+  zipkin:
+    tracing:
+      endpoint: "http://zipkin:9411/api/v2/spans"
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: "http://discovery-server:8761/eureka"
+
+server.port: 8080

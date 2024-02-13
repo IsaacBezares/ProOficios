@@ -1,0 +1,115 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: "http://localhost:8761/eureka"
+
+spring:
+  application:
+    name: "api-gateway"
+  cloud:
+    gateway:
+      routes:
+        - id: "worker-service"
+          uri: "lb://worker-service"
+          predicates:
+            - "Path=/workers/**,/workerimages/**,/unavailability/**"
+          filters:
+            - name: "CircuitBreaker"
+              args:
+                fallbackUri: "forward:/workerServiceFallBack"
+        - id: "user-service"
+          uri: "lb://user-service"
+          predicates:
+            - "Path=/users/**"
+          filters:
+            - name: "CircuitBreaker"
+              args:
+                fallbackUri: "forward:/userServiceFallBack"
+        - id: "service-service"
+          uri: "lb://service-service"
+          predicates:
+            - "Path=/services/**"
+          filters:
+            - name: "CircuitBreaker"
+              args:
+                fallbackUri: "forward:/serviceServiceFallBack"
+        - id: "order-service"
+          uri: "lb://order-service"
+          predicates:
+            - "Path=/orders/**"
+          filters:
+            - name: "CircuitBreaker"
+              args:
+                fallbackUri: "forward:/orderServiceFallBack"
+        - id: "review-service"
+          uri: "lb://review-service"
+          predicates:
+            - "Path=/reviews/**"
+          filters:
+            - name: "CircuitBreaker"
+              args:
+                fallbackUri: "forward:/reviewServiceFallBack"
+        - id: "discovery-server"
+          uri: "http://localhost:8761"
+          predicates:
+            - "Path=/eureka/web"
+          filters:
+            - "SetPath=/"
+        - id: "discovery-server-static"
+          uri: "http://localhost:8761"
+          predicates:
+            - "Path=/eureka/**"
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://localhost:8181/realms/prooficos-realm"
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        register-health-indicator: true
+        registerHealthIndicator: true
+        event-consumer-buffer-size: 10
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+    instances:
+      worker:
+        base-config: "default"
+      user:
+        base-config: "default"
+      service:
+        base-config: "default"
+      order:
+        base-config: "default"
+      review:
+        base-config: "default"
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  zipkin:
+    tracing:
+      endpoint: "http://localhost:9411/api/v2/spans"
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    root: info
+    org.springframework.cloud.gateway.route.RouteDefinitionLocator: info
+    org.springframework.cloud.gateway: trace

@@ -84,8 +84,6 @@ public class ReviewService {
         Worker worker = wRepository.findById(newReview.getWorker().getId())
                 .orElseThrow(() -> new WorkerNotFoundException(newReview.getWorker().getId()));
 
-        System.out.println(worker.getId());
-
         worker.setNoReviews(worker.getNoReviews() + 1);
         worker.setRating((((worker.getRating() == null) ? 0 : worker.getRating() * (worker.getNoReviews() - 1)) + newReview.getRating()) / worker.getNoReviews());
         wRepository.save(worker);
